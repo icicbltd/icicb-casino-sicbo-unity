@@ -29,7 +29,7 @@ public class UIManager : MonoBehaviour
     public Texture chip;
     private Color color = Color.white;
     public static ReceiveJsonObject apiform;
-    private string BaseUrl = "http://192.168.115.172:5005";
+    private string BaseUrl = "http://83.136.219.243:443";
     BetPlayer _player;
 
     void Start()
@@ -37,7 +37,8 @@ public class UIManager : MonoBehaviour
         betAmount = 0.0f;
         BetAmount.text = betAmount.ToString("F2");
         _player = new BetPlayer();
-        chip_button[0].GetComponent<Image>().color = Color.blue;
+        color.a = 0.4f;
+        chip_button[0].GetComponent<Image>().color = color;
         clean();
 
 #if UNITY_WEBGL == true && UNITY_EDITOR == false
@@ -101,7 +102,8 @@ public class UIManager : MonoBehaviour
         chip_button[2].GetComponent<Image>().color = Color.white;
         chip_button[3].GetComponent<Image>().color = Color.white;
         chip_button[4].GetComponent<Image>().color = Color.white;
-        chip_button[index].GetComponent<Image>().color = Color.blue;
+        color.a = 0.4f;
+        chip_button[index].GetComponent<Image>().color = color;
     }
     public void handleClickNumber(int index)
     {
