@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
     private float totalAmount;
     private float[] dice_mark = new float[50];
     private int chipmark = 5;
-    private string mark_array = "";
+    private string mark_array;
     public GameObject[] chip_button = new GameObject[5];
     public GameObject[] dice_button = new GameObject[50];
     public GameObject[] dice_display = new GameObject[3];
@@ -107,57 +107,60 @@ public class UIManager : MonoBehaviour
     }
     public void handleClickNumber(int index)
     {
-        if (betAmount + chipmark > totalAmount && totalAmount > 5f)
+        if (disable_BET.interactable)
         {
-            Alert.text = "";
-            Alert.text = "MAXIMUM BET LIMIT " + totalAmount.ToString("F2") + "!";
-        }
-        else if (totalAmount < 5f)
-        {
-            Alert.text = "";
-            Alert.text = "NOT ENOUGH BALANCE!";
-        }
-        else if (dice_mark[index - 1] + chipmark > 100)
-        {
-            Alert.text = "";
-            Alert.text = "BET LIMIT 100.00!";
-        }
-        else
-        {
-            dice_button[index - 1].GetComponent<RawImage>().texture = chip;
-            dice_button[index - 1].GetComponent<RawImage>().color = Color.white;
-            switch (chipmark)
+            if (betAmount + chipmark > totalAmount && totalAmount > 5f)
             {
-                case 5:
-                    dice_mark[index - 1] += 5f;
-                    mark_text[index - 1].text = dice_mark[index - 1].ToString();
-                    betAmount += 5f;
-                    BetAmount.text = betAmount.ToString("F2");
-                    break;
-                case 10:
-                    dice_mark[index - 1] += 10f;
-                    mark_text[index - 1].text = dice_mark[index - 1].ToString();
-                    betAmount += 10f;
-                    BetAmount.text = betAmount.ToString("F2");
-                    break;
-                case 20:
-                    dice_mark[index - 1] += 20f;
-                    mark_text[index - 1].text = dice_mark[index - 1].ToString();
-                    betAmount += 20f;
-                    BetAmount.text = betAmount.ToString("F2");
-                    break;
-                case 50:
-                    dice_mark[index - 1] += 50f;
-                    mark_text[index - 1].text = dice_mark[index - 1].ToString();
-                    betAmount += 50f;
-                    BetAmount.text = betAmount.ToString("F2");
-                    break;
-                case 100:
-                    dice_mark[index - 1] += 100f;
-                    mark_text[index - 1].text = dice_mark[index - 1].ToString();
-                    betAmount += 100f;
-                    BetAmount.text = betAmount.ToString("F2");
-                    break;
+                Alert.text = "";
+                Alert.text = "MAXIMUM BET LIMIT " + totalAmount.ToString("F2") + "!";
+            }
+            else if (totalAmount < 5f)
+            {
+                Alert.text = "";
+                Alert.text = "NOT ENOUGH BALANCE!";
+            }
+            else if (dice_mark[index - 1] + chipmark > 100)
+            {
+                Alert.text = "";
+                Alert.text = "BET LIMIT 100.00!";
+            }
+            else
+            {
+                dice_button[index - 1].GetComponent<RawImage>().texture = chip;
+                dice_button[index - 1].GetComponent<RawImage>().color = Color.white;
+                switch (chipmark)
+                {
+                    case 5:
+                        dice_mark[index - 1] += 5f;
+                        mark_text[index - 1].text = dice_mark[index - 1].ToString();
+                        betAmount += 5f;
+                        BetAmount.text = betAmount.ToString("F2");
+                        break;
+                    case 10:
+                        dice_mark[index - 1] += 10f;
+                        mark_text[index - 1].text = dice_mark[index - 1].ToString();
+                        betAmount += 10f;
+                        BetAmount.text = betAmount.ToString("F2");
+                        break;
+                    case 20:
+                        dice_mark[index - 1] += 20f;
+                        mark_text[index - 1].text = dice_mark[index - 1].ToString();
+                        betAmount += 20f;
+                        BetAmount.text = betAmount.ToString("F2");
+                        break;
+                    case 50:
+                        dice_mark[index - 1] += 50f;
+                        mark_text[index - 1].text = dice_mark[index - 1].ToString();
+                        betAmount += 50f;
+                        BetAmount.text = betAmount.ToString("F2");
+                        break;
+                    case 100:
+                        dice_mark[index - 1] += 100f;
+                        mark_text[index - 1].text = dice_mark[index - 1].ToString();
+                        betAmount += 100f;
+                        BetAmount.text = betAmount.ToString("F2");
+                        break;
+                }
             }
         }
     }
@@ -201,6 +204,7 @@ public class UIManager : MonoBehaviour
     }
     IEnumerator Server()
     {
+        mark_array = "";
         for (int i = 0; i < 50; i++)
         {
             if (i == 0)
@@ -212,6 +216,7 @@ public class UIManager : MonoBehaviour
                 mark_array += "," + dice_mark[i];
             }
         }
+
         WWWForm form = new WWWForm();
         form.AddField("token", _player.token);
         form.AddField("betAmount", betAmount.ToString("F2"));
@@ -232,6 +237,8 @@ public class UIManager : MonoBehaviour
             apiform = JsonUtility.FromJson<ReceiveJsonObject>(strdata);
             if (apiform.Message == "SUCCESS!")
             {
+                totalAmount -= betAmount;
+                TotalAmount.text = totalAmount.ToString("F2");
                 for (int i = 0; i < 3; i++)
                 {
                     yield return new WaitForSeconds(1f);
@@ -240,7 +247,7 @@ public class UIManager : MonoBehaviour
                 }
                 if (apiform.earnAmount > 0)
                 {
-                    totalAmount += apiform.earnAmount - betAmount;
+                    totalAmount += apiform.earnAmount;
                     TotalAmount.text = totalAmount.ToString("F2");
                     Alert.text = "REWARD : " + apiform.earnAmount.ToString();
                     for (int i = 0; i < apiform.indexArray.Length; i++)
@@ -250,8 +257,6 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
-                    totalAmount -= betAmount;
-                    TotalAmount.text = totalAmount.ToString("F2");
                     Alert.text = "REWARD : 0.00";
                 }
             }
