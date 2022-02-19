@@ -34,7 +34,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        betAmount = 0.0f;
+        betAmount = 0f;
         BetAmount.text = betAmount.ToString("F2");
         _player = new BetPlayer();
         color.a = 0.4f;
